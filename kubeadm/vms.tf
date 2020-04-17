@@ -140,7 +140,8 @@ runcmd:
   - kubeadm init --config /etc/kubernetes/kubeadm.yaml
   - mkdir -p /home/${var.username}/.kube
   - cp -i /etc/kubernetes/admin.conf /home/${var.username}/.kube/config
-  - chown ${var.username}.${var.username} /home/${var.username}/.kube/config
+  - chown -R ${var.username}.${var.username} /home/${var.username}/.kube
+  - chown -R ${var.username}.${var.username} /home/${var.username}/.ssh
 write_files:
   - path: /etc/kubernetes/azure.json
     encoding: b64
@@ -152,7 +153,6 @@ write_files:
     encoding: b64
     content: ${base64encode(local.docker_daemon)}
   - path: /home/${var.username}/.ssh/id_rsa
-    owner: ${var.username}.${var.username}
     permissions: '0400'
     encoding: b64
     content: ${base64encode(file(var.private_key))}
