@@ -11,6 +11,9 @@ variable "username" {
 variable "public_key" {
 }
 
+variable "private_key" {
+}
+
 variable "vm_size" {
   default = "Standard_B2s"
 }

@@ -41,7 +41,7 @@ kubeadm_master = <<EOT
 apiVersion: kubeadm.k8s.io/v1beta2
 kind: InitConfiguration
 localAPIEndpoint:
-  advertiseAddress: 172.16.0.4
+  advertiseAddress: REPLACE_ME
   bindPort: 6443
 nodeRegistration:
   kubeletExtraArgs:
@@ -56,9 +56,9 @@ kind: ClusterConfiguration
 clusterName: ${var.business_unit}
 apiServer:
   certSANs:
-  - ${lower(var.business_unit)}-00
   - ${lower(var.business_unit)}
   - ${lower(var.business_unit)}.${var.domain}
+  - ${azurerm_public_ip.pip.fqdn}
   extraArgs:
     cloud-config: /etc/kubernetes/azure.json
     cloud-provider: azure
@@ -97,7 +97,7 @@ apiVersion: kubeadm.k8s.io/v1beta2
 caCertPath: /etc/kubernetes/pki/ca.crt
 discovery:
   bootstrapToken:
-    apiServerEndpoint: 172.16.0.4:6443
+    apiServerEndpoint: ${lower(var.business_unit)}-00:6443
     token: REPLACE_ME
     unsafeSkipCAVerification: true
   timeout: 5m0s
@@ -135,6 +135,12 @@ runcmd:
   - apt-mark hold kubelet kubeadm kubectl
   - apt-get upgrade -y
   - apt-get autoremove -y
+  - IP=`ifconfig eth0 | grep 'inet ' | awk '{print $2}'`
+  - sed -i "s/REPLACE_ME/$${IP}/g" /etc/kubernetes/kubeadm.yaml
+  - kubeadm init --config /etc/kubernetes/kubeadm.yaml
+  - mkdir -p /home/${var.username}/.kube
+  - cp -i /etc/kubernetes/admin.conf /home/${var.username}/.kube/config
+  - chown ${var.username}.${var.username} /home/${var.username}/.kube/config
 write_files:
   - path: /etc/kubernetes/azure.json
     encoding: b64
@@ -145,6 +151,11 @@ write_files:
   - path: /etc/docker/daemon.json
     encoding: b64
     content: ${base64encode(local.docker_daemon)}
+  - path: /home/${var.username}/.ssh/id_rsa
+    owner: ${var.username}.${var.username}
+    permissions: '0400'
+    encoding: b64
+    content: ${base64encode(file(var.private_key))}
 EOT
 
   custom_data_agent  = <<EOT
@@ -185,6 +196,7 @@ resource "azurerm_public_ip" "pip" {
   location            = azurerm_resource_group.rg.location
   sku                 = "Standard"
   allocation_method   = "Static"
+  domain_name_label   = "${lower(var.business_unit)}${format("%04s", random_integer.id.result)}"
 }
 
 resource "azurerm_network_interface" "nics" {
@@ -223,7 +235,7 @@ resource "azurerm_linux_virtual_machine" "vms" {
   admin_username      = var.username
   admin_ssh_key {
     username   = var.username
-    public_key = var.public_key
+    public_key = file(var.public_key)
   }
 
   disable_password_authentication = true
