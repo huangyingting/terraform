@@ -1,5 +1,5 @@
 provider "azurerm" {
-  version = "=2.0.0"
+  version = "=2.7.0"
   features {}
 }
 
@@ -17,6 +17,6 @@ resource "random_integer" "suffix" {
 
 # Create resource group
 resource "azurerm_resource_group" "virtualwan" {
-  name     = "${var.business_unit}-VirtualWAN"
+  name     = "${var.business_unit}-vWAN"
   location = var.location_1
 }
