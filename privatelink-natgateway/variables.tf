@@ -19,3 +19,8 @@ variable "vm_size" {
   description = "VM size"
   default     = "Standard_B1s"
 }
+
+variable "enable_proxy_protocol" {
+  description = "Enable proxy protocol"
+  default = false
+}

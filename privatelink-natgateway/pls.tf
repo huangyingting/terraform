@@ -17,5 +17,5 @@ resource "azurerm_private_link_service" "pls" {
     primary                    = true
   }
 
-  enable_proxy_protocol = true
+  enable_proxy_protocol = var.enable_proxy_protocol
 }
