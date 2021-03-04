@@ -1,22 +1,30 @@
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "=2.49.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "=3.1.0"
+    }    
+  }
+}
+
 provider "azurerm" {
-  version = "=2.7.0"
   features {}
 }
 
 provider "random" {
-  version = "~> 2.2"
 }
 
 resource "random_integer" "suffix" {
   min = 0
-  max = 999999
-  keepers = {
-    business_unit = var.business_unit
-  }
+  max = 9999
 }
 
 # Create resource group
 resource "azurerm_resource_group" "virtualwan" {
-  name     = "${var.business_unit}-vWAN"
+  name     = "vWAN-${format("%04s", random_integer.suffix.result)}"
   location = var.location_1
 }

@@ -10,7 +10,7 @@ resource "azurerm_subnet" "spoke1wl" {
   name                 = "WLSubnet"
   resource_group_name  = azurerm_resource_group.virtualwan.name
   virtual_network_name = azurerm_virtual_network.spoke1.name
-  address_prefix       = "10.9.0.0/24"
+  address_prefixes       = ["10.9.0.0/24"]
 }
 
 resource "azurerm_virtual_network" "spoke2" {
@@ -24,7 +24,7 @@ resource "azurerm_subnet" "spoke2wl" {
   name                 = "WLSubnet"
   resource_group_name  = azurerm_resource_group.virtualwan.name
   virtual_network_name = azurerm_virtual_network.spoke2.name
-  address_prefix       = "10.10.0.0/24"
+  address_prefixes       = ["10.10.0.0/24"]
 }
 
 resource "azurerm_virtual_network" "spoke3" {
@@ -38,7 +38,7 @@ resource "azurerm_subnet" "spoke3wl" {
   name                 = "WLSubnet"
   resource_group_name  = azurerm_resource_group.virtualwan.name
   virtual_network_name = azurerm_virtual_network.spoke3.name
-  address_prefix       = "10.17.0.0/24"
+  address_prefixes       = ["10.17.0.0/24"]
 }
 
 resource "azurerm_virtual_network" "onprem" {
@@ -52,12 +52,12 @@ resource "azurerm_subnet" "onpremgw" {
   name                 = "GatewaySubnet"
   resource_group_name  = azurerm_resource_group.virtualwan.name
   virtual_network_name = azurerm_virtual_network.onprem.name
-  address_prefix       = "10.128.1.0/24"
+  address_prefixes       = ["10.128.1.0/24"]
 }
 
 resource "azurerm_subnet" "onpremwl" {
   name                 = "WLSubnet"
   resource_group_name  = azurerm_resource_group.virtualwan.name
   virtual_network_name = azurerm_virtual_network.onprem.name
-  address_prefix       = "10.128.0.0/24"
+  address_prefixes       = ["10.128.0.0/24"]
 }

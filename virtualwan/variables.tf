@@ -1,7 +1,3 @@
-variable "business_unit" {
-  description = "The prefix used for all resources in this example"
-}
-
 variable "location_1" {
   description = "The Azure location where hub 1 resources in this example should be created"
   default     = "southeastasia"
